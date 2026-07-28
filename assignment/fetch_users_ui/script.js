@@ -1,34 +1,30 @@
 const usersDiv = document.getElementById("users");
 
-const worker = new Worker("worker.js");
+const worker = new Worker("./worker.js");
 
 worker.postMessage("fetchUsers");
 
 worker.onmessage = function (event) {
-    const data = event.data;
+    const { users, error } = event.data;
 
-    if (data.error) {
+    if (error || !users || users.length === 0) {
         usersDiv.textContent = "No users found";
         return;
     }
 
-    const users = data.users;
-
-    if (!users || users.length === 0) {
-        usersDiv.textContent = "No users found";
-        return;
-    }
+    usersDiv.innerHTML = "";
 
     users.forEach(user => {
-        const div = document.createElement("div");
+        const p = document.createElement("p");
 
-        div.textContent =
+        p.textContent =
             `${user.name} - ${user.active ? "Active" : "Inactive"}`;
 
-        usersDiv.appendChild(div);
+        usersDiv.appendChild(p);
     });
 };
 
-worker.onerror = function () {
+worker.onerror = function (event) {
+    console.error("Worker Error:", event.message);
     usersDiv.textContent = "No users found";
 };

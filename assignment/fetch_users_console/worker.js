@@ -1,4 +1,8 @@
+console.log("Worker started");
+
 self.onmessage = async function () {
+    console.log("Worker received message");
+
     try {
         const response = await fetch("https://dummyapi.com/users");
 
@@ -25,7 +29,7 @@ self.onmessage = async function () {
 
     } catch (error) {
         self.postMessage({
-            error: error.message
+            error: "API Error: " + error.message
         });
     }
 };
